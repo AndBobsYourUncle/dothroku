@@ -1,0 +1,58 @@
+version: '2'
+
+services:
+  nginx-server:
+    image: jwilder/nginx-proxy
+    container_name: nginx-proxy
+    restart: always
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
+      - ./certs:/etc/nginx/certs
+      - /etc/nginx/vhost.d
+      - /usr/share/nginx/html
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+  lets-encrypt:
+    image: jrcs/letsencrypt-nginx-proxy-companion
+    container_name: lets-encrypt
+    restart: always
+    depends_on:
+      - nginx-server
+    volumes:
+      - ./certs:/etc/nginx/certs:rw
+    volumes_from:
+      - nginx-server
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+  pg-dothroku:
+    image: postgres
+    container_name: pg-dothroku
+    restart: always
+    depends_on:
+      - nginx-server
+      - lets-encrypt
+    volumes:
+      - /var/run/postgresql
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD:
+  dothroku:
+    build: ./
+    image: dothroku
+    command: bash -c "rails-init && /sbin/my_init"
+    container_name: dothroku
+    restart: always
+    depends_on:
+      - pg-dothroku
+      - nginx-server
+      - lets-encrypt
+    volumes_from:
+      - pg-dothroku
+    environment:
+      - VIRTUAL_HOST=dothroku.localhost
+      - VIRTUAL_PORT=443
+      - LETSENCRYPT_HOST=dothroku.localhost
+      - LETSENCRYPT_EMAIL=theboss@dothroku.localhost
+      - SECRET_KEY_BASE=${SECRET_KEY_BASE}

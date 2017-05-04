@@ -6,11 +6,17 @@ default: &default
 development:
   <<: *default
   database: dothroku_development
+  username: postgres
+  password:
 
 test:
   <<: *default
   database: dothroku_test
+  username: postgres
+  password:
 
 production:
   <<: *default
   database: dothroku_production
+  username: root
+  password:
