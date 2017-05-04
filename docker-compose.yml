@@ -50,7 +50,7 @@ services:
       - lets-encrypt
     volumes_from:
       - pg-dothroku
-      - nginx-proxy
+      - nginx-server
     # volumes:
     #   - /var/run/docker.sock:/tmp/docker.sock:ro
     environment:
