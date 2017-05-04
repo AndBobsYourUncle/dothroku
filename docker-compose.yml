@@ -39,7 +39,10 @@ services:
       POSTGRES_USER: root
       POSTGRES_PASSWORD:
   dothroku:
-    build: ./
+    build:
+      context: .
+      args:
+          DOCKER_GROUP_ID: `getent group docker | cut -d: -f3`
     image: dothroku
     command: bash -c "rails-init && /sbin/my_init"
     container_name: dothroku
