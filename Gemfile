@@ -50,9 +50,11 @@ gem 'docker-api'
 
 gem "font-awesome-rails"
 
+gem 'pry'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
-  gem 'best_errors'
+  # gem 'best_errors'
   gem 'byebug', platform: :mri
 end
 

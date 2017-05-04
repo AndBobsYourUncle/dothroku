@@ -6,6 +6,6 @@ class PagesController < ApplicationController
   end
 
   def secret
-    @containers = DockerAPI::Container.all()
+    @containers = DockerApi::Container.all()
   end
 end
