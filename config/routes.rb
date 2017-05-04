@@ -16,4 +16,6 @@ Rails.application.routes.draw do
       end
     end
   end
+
+  resources :apps, except: [:index]
 end

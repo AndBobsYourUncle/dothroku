@@ -1,6 +1,9 @@
 # Initial Setup
 
 * Setup Docker and Docker Compose on host system
+
+`docker network create dothroku_nginx`
+
 * Add SECRET_KEY_BASE and DOCKER_GROUP_ID environment variables to ~/.bashrc
 
 ``

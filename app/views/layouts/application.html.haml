@@ -12,12 +12,5 @@
       .row
         = render partial: 'side_nav'
         %main.col-sm-9.offset-sm-3.col-md-10.offset-md-2.pt-3
-          - if notice
-            .alert.alert-warning{:role => "alert"}
-              %strong Oh snap!
-              = notice
-          - if alert
-            .alert.alert-danger{:role => "alert"}
-              %strong Oh snap!
-              = alert
+          = flash_messages
           = yield
