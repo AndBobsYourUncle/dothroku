@@ -8,7 +8,7 @@ class AppsController < ApplicationController
     @app = App.new app_params
 
     if @app.save
-      redirect_to root_path
+      redirect_to app_path(@app), flash: {success: "App has been successfully created!"}
     else
       render :new
     end
@@ -20,6 +20,10 @@ class AppsController < ApplicationController
     @app.destroy
 
     redirect_to root_path, flash: {success: "App has been successfully deleted!"}
+  end
+
+  def show
+    load_app
   end
 
   private
