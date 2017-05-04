@@ -81,6 +81,8 @@ GEM
     excon (0.55.0)
     execjs (2.7.0)
     ffi (1.9.18)
+    font-awesome-rails (4.7.0.1)
+      railties (>= 3.2, < 5.1)
     globalid (0.4.0)
       activesupport (>= 4.2.0)
     haml (4.0.7)
@@ -217,6 +219,7 @@ DEPENDENCIES
   coffee-rails (~> 4.2)
   devise
   docker-api
+  font-awesome-rails
   haml-rails (~> 0.9)
   hamlit (~> 2.7.2)
   jbuilder (~> 2.5)
