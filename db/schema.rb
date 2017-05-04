@@ -17,8 +17,10 @@ ActiveRecord::Schema.define(version: 20170504205400) do
 
   create_table "apps", force: :cascade do |t|
     t.string   "name"
-    t.datetime "created_at", null: false
-    t.datetime "updated_at", null: false
+    t.string   "github_auth_token"
+    t.string   "github_repo"
+    t.datetime "created_at",        null: false
+    t.datetime "updated_at",        null: false
   end
 
   create_table "users", force: :cascade do |t|
