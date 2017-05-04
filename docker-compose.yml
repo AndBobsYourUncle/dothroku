@@ -42,7 +42,7 @@ services:
     build:
       context: .
       args:
-          DOCKER_GROUP_ID: `getent group docker | cut -d: -f3`
+        - DOCKER_GROUP_ID
     image: dothroku
     command: bash -c "rails-init && /sbin/my_init"
     container_name: dothroku

@@ -1,24 +1,11 @@
-# README
+# Initial Setup
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+* Setup Docker and Docker Compose on host system
+* Add SECRET_KEY_BASE and DOCKER_GROUP_ID environment variables to ~/.bashrc
 
-Things you may want to cover:
+`
+export DOCKER_GROUP_ID=`getent group docker | cut -d: -f3`
+export SECRET_KEY_BASE=SECRET
+`
 
-* Ruby version
-
-* System dependencies
-
-* Configuration
-
-* Database creation
-
-* Database initialization
-
-* How to run the test suite
-
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
+* Run `docker-compose up -d`
