@@ -1,4 +1,4 @@
-FROM phusion/passenger-ruby23:0.9.19
+FROM phusion/passenger-ruby24:0.9.20
 
 ENV HOME /root
 
@@ -6,14 +6,14 @@ CMD ["/sbin/my_init"]
 
 # Set the default Ruby version for app
 RUN bash -lc 'rvm get head --auto-dotfiles'
-RUN bash -lc 'rvm install ruby-2.3.3'
-RUN bash -lc 'rvm --default use ruby-2.3.3'
+RUN bash -lc 'rvm install ruby-2.4.1'
+RUN bash -lc 'rvm --default use ruby-2.4.1'
 RUN bash -lc 'gem install bundle'
 
 # Build the bundle before adding app, to cache bundle in Docker image
 COPY Gemfile* /tmp/
 WORKDIR /tmp
-RUN bash -lc 'rvm-exec 2.3.3 bundle install --jobs 8'
+RUN bash -lc 'rvm-exec 2.4.1 bundle install --jobs 8'
 
 # Enable Nginx and Passenger
 RUN rm -f /etc/service/nginx/down
