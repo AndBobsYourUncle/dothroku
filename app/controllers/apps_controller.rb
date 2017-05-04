@@ -33,6 +33,8 @@ class AppsController < ApplicationController
 
   def show
     load_app
+
+    @github = Github.new(oauth_token: @app.github_auth_token)
   end
 
   def update
