@@ -46,8 +46,11 @@ end
 gem 'hamlit', '~> 2.7.2'
 gem "haml-rails", "~> 0.9"
 
+gem 'docker-api'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
+  gem 'best_errors'
   gem 'byebug', platform: :mri
 end
 
