@@ -5,6 +5,7 @@
 
 ``
 export DOCKER_GROUP_ID=`getent group docker | cut -d: -f3`
+
 export SECRET_KEY_BASE=SECRET
 ``
 
