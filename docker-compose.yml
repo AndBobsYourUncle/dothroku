@@ -50,6 +50,8 @@ services:
       - lets-encrypt
     volumes_from:
       - pg-dothroku
+    volumes:
+      - /var/run/docker.sock:/tmp/docker.sock:ro
     environment:
       - VIRTUAL_HOST=dothroku.localhost
       - VIRTUAL_PORT=443
