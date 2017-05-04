@@ -14,6 +14,6 @@
     %tbody
       - @apps.each do |app|
         %tr
-          %td= app.name
+          %td= link_to app.name, app_path(app)
           %td
             =link_to fa_icon("trash-o"), app_path(app), class: 'btn btn-secondary btn-sm active', role: 'button', "aria-pressed": true, method: :delete

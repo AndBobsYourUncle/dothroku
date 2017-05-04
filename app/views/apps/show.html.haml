@@ -1,1 +1,5 @@
 %h1= @app.name
+- if @app.github_auth_token
+  Connected to GitHub
+- else
+  =link_to "Link Github", authorize_app_path(app: @app), class: 'btn btn-secondary btn-lg active', role: 'button', "aria-pressed": true

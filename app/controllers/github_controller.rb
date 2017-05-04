@@ -1,16 +1,13 @@
 class GithubController < ApplicationController
 
-  def authorize
-    address = github.authorize_url redirect_uri: 'http://localhost:3000/callback', scope: 'repo'
-    redirect_to address
-  end
-
   def callback
     authorization_code = params[:code]
     access_token = github.get_token authorization_code
-    access_token.token
+    session[:github_token] = access_token.token
 
-    redirect_to root_url
+    App.find(session[:github_app_id]).update(github_auth_token: access_token.token)
+
+    redirect_to app_path(session[:github_app_id])
   end
 
   private

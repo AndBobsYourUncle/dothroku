@@ -5,8 +5,7 @@ Rails.application.routes.draw do
 
   get 'secret', to: 'pages#secret', as: :secret
 
-  get 'authorize', to: 'github#authorize', as: :authorize
-  get 'callback', to: 'github#callback', as: :callback
+  get 'callback', to: 'github#callback', as: :github_callback
 
   namespace :docker_api do
     resources :containers do
@@ -17,5 +16,9 @@ Rails.application.routes.draw do
     end
   end
 
-  resources :apps, except: [:index]
+  resources :apps, except: [:index] do
+    member do
+      get :authorize
+    end
+  end
 end
