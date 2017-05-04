@@ -1,10 +1,12 @@
 class DockerApi::ContainersController < ApplicationController
+  before_action :authenticate_user!
+
   def stop
     load_container
 
     @container.stop
 
-    redirect_to :back
+    redirect_back fallback_location: root_path
   end
 
   def start
@@ -12,7 +14,7 @@ class DockerApi::ContainersController < ApplicationController
 
     @container.start
 
-    redirect_to :back
+    redirect_back fallback_location: root_path
   end
 
   private
