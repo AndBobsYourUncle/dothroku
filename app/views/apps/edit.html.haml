@@ -1,0 +1,14 @@
+=simple_form_for @app do |form|
+  .card
+    .card-block
+      %h4.card-title= @app.name
+      - if @app.github_auth_token
+        .alert.alert-success{role: "alert"}
+          = "Authorized on GitHub as @#{@github_user.login} (#{@github_user.name})"
+
+        =form.input :github_repo, collection: @own_repos, wrapper_html: {class: 'row justify-content-start col-4'}
+
+      - else
+        =link_to "Link Github", authorize_app_path(app: @app), class: 'btn btn-secondary btn-lg active', role: 'button', "aria-pressed": true
+
+      =form.submit "Update App", class: 'card-link btn btn-primary'

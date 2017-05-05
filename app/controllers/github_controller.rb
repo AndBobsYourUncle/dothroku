@@ -7,7 +7,7 @@ class GithubController < ApplicationController
 
     App.find(session[:github_app_id]).update(github_auth_token: access_token.token)
 
-    redirect_to app_path(session[:github_app_id])
+    redirect_to edit_app_path(session[:github_app_id])
   end
 
   private
