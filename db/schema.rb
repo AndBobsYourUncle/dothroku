@@ -19,6 +19,7 @@ ActiveRecord::Schema.define(version: 20170504205400) do
     t.string   "name"
     t.string   "github_auth_token"
     t.string   "github_repo"
+    t.string   "github_branch"
     t.datetime "created_at",        null: false
     t.datetime "updated_at",        null: false
   end

@@ -4,6 +4,7 @@ class CreateApps < ActiveRecord::Migration[5.0]
       t.string :name
       t.string :github_auth_token
       t.string :github_repo
+      t.string :github_branch
 
       t.timestamps
     end

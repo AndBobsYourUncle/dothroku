@@ -38,11 +38,20 @@ class AppsController < ApplicationController
   def edit
     load_app
 
-    github = Octokit::Client.new(access_token: @app.github_auth_token)
-    @github_user = github.user
-    all_repositories = github.repositories
+    if @app.github_auth_token
+      github = Octokit::Client.new(access_token: @app.github_auth_token)
+      @github_user = github.user
+      all_repositories = github.repositories
 
-    @own_repos = all_repositories.map { |r| r.owner.login == @github_user.login ? OpenStruct.new({id: r.id, name: r.name}) : nil }.compact
+      @own_repos = all_repositories.map { |r| r.owner.login == @github_user.login ? OpenStruct.new({id: r.full_name, name: r.name}) : nil }.compact
+
+      selected_repository = all_repositories.select { |r| r.id == @app.github_repo }.first
+
+      if @app.github_repo
+        branches = github.branches @app.github_repo
+        @repo_branches = branches.map { |r| OpenStruct.new({id: r.name, name: r.name}) }
+      end
+    end
   end
 
   def update
@@ -66,7 +75,7 @@ class AppsController < ApplicationController
   end
 
   def app_params
-    params.require(:app).permit :name, :github_auth_token, :github_repo
+    params.require(:app).permit :name, :github_auth_token, :github_repo, :github_branch
   end
 
 end
