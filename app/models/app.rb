@@ -14,4 +14,11 @@
 class App < ApplicationRecord
   validates :name, presence: true
 
+  before_save :clear_github_branch, if: :github_repo_changed?
+
+  private
+
+  def clear_github_branch
+    self.github_branch = nil
+  end
 end
