@@ -22,4 +22,6 @@ Rails.application.routes.draw do
       get :deploy
     end
   end
+
+  mount ActionCable.server, at: '/cable'
 end
