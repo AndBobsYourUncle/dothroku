@@ -11,6 +11,9 @@
         - if @app.github_repo
           =form.input :github_branch, collection: @repo_branches, wrapper_html: {class: 'row justify-content-start col-4'}
 
+        - if @app.github_branch
+          =link_to "Deploy", deploy_app_path(@app), class: 'btn btn-primary', role: 'button', "aria-pressed": true
+
       - else
         =link_to "Link Github", authorize_app_path(app: @app), class: 'btn btn-secondary btn-lg active', role: 'button', "aria-pressed": true
 

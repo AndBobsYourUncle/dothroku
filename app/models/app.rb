@@ -2,12 +2,13 @@
 #
 # Table name: apps
 #
+#  created_at        :datetime         not null
+#  deploying         :boolean
+#  github_auth_token :string
+#  github_branch     :string
+#  github_repo       :string
 #  id                :integer          not null, primary key
 #  name              :string
-#  github_auth_token :string
-#  github_repo       :string
-#  github_branch     :string
-#  created_at        :datetime         not null
 #  updated_at        :datetime         not null
 #
 

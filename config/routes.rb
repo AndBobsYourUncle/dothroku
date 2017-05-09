@@ -19,6 +19,7 @@ Rails.application.routes.draw do
   resources :apps, except: [:index] do
     member do
       get :authorize
+      get :deploy
     end
   end
 end

@@ -1,4 +1,12 @@
 class AppsController < ApplicationController
+  def deploy
+    load_app
+
+    @app.update(deploying: true)
+    Apps::DeployJob.perform_later(@app)
+
+    redirect_to edit_app_path(@app), flash: {success: "App is being deployed!"}
+  end
 
   def authorize
     load_app
