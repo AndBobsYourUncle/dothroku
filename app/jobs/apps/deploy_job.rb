@@ -46,7 +46,7 @@ class Apps::DeployJob < ApplicationJob
     [container, image]
   end
 
-  def perform(app)
+  def prepare_container
     container, image = [nil, nil]
     [
       'apk add --no-cache git',
@@ -58,10 +58,21 @@ class Apps::DeployJob < ApplicationJob
         container, image = run_image_command cmd, image_name: 'docker:dind'
       end
     end
+    [container, image]
+  end
 
+  def add_buildpacks container, image
     dockerfile_path = 'buildpacks/Dockerfile'
     container.store_file("/bootstrap/Dockerfile", File.read(dockerfile_path))
     image = container.commit
+
+    [container, image]
+  end
+
+  def perform(app)
+    container, image = prepare_container
+
+    container, image = add_buildpacks container, image
 
     run_with_output image, ["docker", "build", "."]
   end
