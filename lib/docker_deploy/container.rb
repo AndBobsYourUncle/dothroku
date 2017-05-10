@@ -12,22 +12,36 @@ module DockerDeploy
       run_with_output image, ["docker", "build", "."]
     end
 
-    def stream_to_output stream, chunk
-      if chunk.present? && stream.to_s == 'stdout'
-        chunk
-      elsif chunk.present?
-        "#{stream}: #{chunk}"
-      else
-        stream
+    def prepare_container
+      container, image = [nil, nil]
+      [
+        'apk add --no-cache git',
+        'git clone --depth 1 https://github.com/judetucker/bootstrap'
+      ].each do |cmd|
+        if image
+          container, image = run_image_command cmd, image: image
+        else
+          container, image = run_image_command cmd, image_name: 'docker:dind'
+        end
       end
+      [container, image]
     end
 
-    def broadcast_container_output container
-      container.attach(ATTACH_DEFAULTS.dup) do |stream, chunk|
-        output = stream_to_output stream, chunk
+    def run_image_command(cmd, image_name: nil, image: nil)
+      image = Docker::Image.create('fromImage' => image_name) if image_name
+      container = image.run(cmd)
+      broadcast_container_output container
 
-        ActionCable.server.broadcast 'deploy_channel', output.to_s.strip_extended
-      end
+      image = container.commit
+      [container, image]
+    end
+
+    def add_buildpacks container, image
+      dockerfile_path = 'buildpacks/Dockerfile'
+      container.store_file("/bootstrap/Dockerfile", File.read(dockerfile_path))
+      image = container.commit
+
+      [container, image]
     end
 
     def run_with_output image, cmd
@@ -44,36 +58,23 @@ module DockerDeploy
       broadcast_container_output container
     end
 
-    def run_image_command(cmd, image_name: nil, image: nil)
-      image = Docker::Image.create('fromImage' => image_name) if image_name
-      container = image.run(cmd)
-      broadcast_container_output container
+    def broadcast_container_output container
+      container.attach(ATTACH_DEFAULTS.dup) do |stream, chunk|
+        output = stream_to_output stream, chunk
 
-      image = container.commit
-      [container, image]
-    end
-
-    def prepare_container
-      container, image = [nil, nil]
-      [
-        'apk add --no-cache git',
-        'git clone --depth 1 https://github.com/judetucker/bootstrap'
-      ].each do |cmd|
-        if image
-          container, image = run_image_command cmd, image: image
-        else
-          container, image = run_image_command cmd, image_name: 'docker:dind'
-        end
+        ActionCable.server.broadcast 'deploy_channel', output.to_s.strip_extended
       end
-      [container, image]
     end
 
-    def add_buildpacks container, image
-      dockerfile_path = 'buildpacks/Dockerfile'
-      container.store_file("/bootstrap/Dockerfile", File.read(dockerfile_path))
-      image = container.commit
-
-      [container, image]
+    def stream_to_output stream, chunk
+      if chunk.present? && stream.to_s == 'stdout'
+        chunk
+      elsif chunk.present?
+        "#{stream}: #{chunk}"
+      else
+        stream
+      end
     end
+
   end
 end
