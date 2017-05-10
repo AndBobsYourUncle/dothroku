@@ -6,7 +6,11 @@ App.app_deploy = App.cable.subscriptions.create "AppDeployChannel",
     # Called when the subscription has been terminated by the server
 
   received: (data) ->
-    # console.log data
     $('#deploy_content').val($("#deploy_content").val() + data);
-    $('#deploy_content').scrollTop($('#deploy_content')[0].scrollHeight);
-    # Called when there's incoming data on the websocket for this channel
+
+    scrollTop = $('#deploy_content').scrollTop()
+    height = $('#deploy_content').height()
+    scrollHeight = $('#deploy_content')[0].scrollHeight
+
+    if (scrollTop + height >= scrollHeight - 100)
+      $('#deploy_content').scrollTop(scrollHeight);

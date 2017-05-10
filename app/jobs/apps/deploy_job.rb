@@ -1,40 +1,68 @@
 class Apps::DeployJob < ApplicationJob
   queue_as :deploy
 
-  def run_with_output image, cmd
-    container = Docker::Container.create('Image' => image.id, "WorkingDir" => "/bootstrap", 'HostConfig' => {"Binds" => ["/var/run/docker.sock:/var/run/docker.sock"]}, "Cmd" => cmd)
-    container.tap(&:start).attach(stream: true, stdout: true, stderr: true, logs: true) do |stream, chunk|
-      output = chunk.present? ? "#{stream}: #{chunk}" : stream
-      output ||= stream
+  def attach_defaults
+    {stream: true, stdout: true, stderr: true, logs: true}
+  end
 
-      ActionCable.server.broadcast 'deploy_channel', output.to_s.strip_control_and_extended_characters
+  def stream_to_output stream, chunk
+    if chunk.present? && stream.to_s == 'stdout'
+      chunk
+    elsif chunk.present?
+      "#{stream}: #{chunk}"
+    else
+      stream
     end
+  end
 
+  def broadcast_container_output container
+    container.attach(attach_defaults) do |stream, chunk|
+      output = stream_to_output stream, chunk
+
+      ActionCable.server.broadcast 'deploy_channel', output.to_s.strip_extended
+    end
+  end
+
+  def run_with_output image, cmd
+    container = Docker::Container.create(
+      "Image" => image.id,
+      "WorkingDir" => "/bootstrap",
+      "HostConfig" => {
+        "Binds" => ["/var/run/docker.sock:/var/run/docker.sock"]
+      },
+      "Cmd" => cmd
+    )
+    container.start
+
+    broadcast_container_output container
+  end
+
+  def run_image_command(cmd, image_name: nil, image: nil)
+    image = Docker::Image.create('fromImage' => image_name) if image_name
+    container = image.run(cmd)
+    broadcast_container_output container
+
+    image = container.commit
+    [container, image]
   end
 
   def perform(app)
-    image = Docker::Image.create('fromImage' => 'docker:dind')
-    container = image.run('apk add --no-cache git')
-    container.attach(stream: true, stdout: true, stderr: true, logs: true) do |stream, chunk|
-      output = chunk.present? ? "#{stream}: #{chunk}" : stream
-      output ||= stream
-
-      ActionCable.server.broadcast 'deploy_channel', output.to_s.strip_control_and_extended_characters
+    container, image = [nil, nil]
+    [
+      'apk add --no-cache git',
+      'git clone --depth 1 https://github.com/judetucker/bootstrap'
+    ].each do |cmd|
+      if image
+        container, image = run_image_command cmd, image: image
+      else
+        container, image = run_image_command cmd, image_name: 'docker:dind'
+      end
     end
-    image = container.commit
 
-    container = image.run('git clone --depth 1 https://github.com/judetucker/bootstrap')
-    container.attach(stream: true, stdout: true, stderr: true, logs: true) do |stream, chunk|
-      output = chunk.present? ? "#{stream}: #{chunk}" : stream
-      output ||= stream
-
-      ActionCable.server.broadcast 'deploy_channel', output.to_s.strip_control_and_extended_characters
-    end
-    container.store_file("/bootstrap/Dockerfile", File.read('buildpacks/Dockerfile'))
+    dockerfile_path = 'buildpacks/Dockerfile'
+    container.store_file("/bootstrap/Dockerfile", File.read(dockerfile_path))
     image = container.commit
 
     run_with_output image, ["docker", "build", "."]
-
-    # image.delete(:force => true)
   end
 end
