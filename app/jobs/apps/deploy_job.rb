@@ -1,9 +1,9 @@
-require 'docker_deploy/docker_deploy'
+require 'docker_deploy/core'
 
 class Apps::DeployJob < ApplicationJob
   queue_as :deploy
 
   def perform(app)
-    DockerDeploy.new(app: app).deploy
+    DockerDeploy::Core.new(app: app).deploy
   end
 end
