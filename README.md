@@ -14,10 +14,9 @@ export DOCKER_GROUP_ID=`getent group docker | cut -d: -f3`
 
 * Add Github app client ID and secret to ~/.bashrc
 
-``
-export GITHUB_CLIENT_ID=[CLIENT_ID]
-export GITHUB_CLIENT_SECRET=[CLIENT_SECRET]
-``
+`export GITHUB_CLIENT_ID=[CLIENT_ID]`
+
+`export GITHUB_CLIENT_SECRET=[CLIENT_SECRET]`
 
 * Run `docker-compose up -d`
 
