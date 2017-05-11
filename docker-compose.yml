@@ -64,3 +64,5 @@ services:
       - LETSENCRYPT_HOST=dothroku.localhost
       - LETSENCRYPT_EMAIL=theboss@dothroku.localhost
       - SECRET_KEY_BASE=${SECRET_KEY_BASE}
+      - GITHUB_CLIENT_ID=${GITHUB_CLIENT_ID}
+      - GITHUB_CLIENT_SECRET=${GITHUB_CLIENT_SECRET}
