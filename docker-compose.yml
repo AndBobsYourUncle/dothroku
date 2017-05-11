@@ -45,6 +45,8 @@ services:
   redis:
     image: redis
     container_name: redis
+    networks:
+      - dothroku_nginx
   workers-dothroku:
     build:
       context: .
