@@ -116,10 +116,14 @@ module DockerDeploy
     end
 
     def broadcast_container_output container
-      container.attach(ATTACH_DEFAULTS.dup) do |stream, chunk|
-        output = stream_to_output stream, chunk
+      begin
+        container.attach(ATTACH_DEFAULTS.dup) do |stream, chunk|
+          output = stream_to_output stream, chunk
 
-        ActionCable.server.broadcast "deploy_channel-#{core.app.image_name}", output.to_s.strip_extended
+          ActionCable.server.broadcast "deploy_channel-#{core.app.image_name}", output.to_s.strip_extended
+        end
+      rescue Docker::Error::TimeoutError => e
+        broadcast_container_output container
       end
     end
 
