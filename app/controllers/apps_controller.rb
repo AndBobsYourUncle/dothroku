@@ -13,7 +13,7 @@ class AppsController < ApplicationController
 
     session[:github_app_id] = @app.id
 
-    address = github_api.authorize_url redirect_uri: 'http://localhost:3000/callback', scope: 'repo'
+    address = github_api.authorize_url redirect_uri: "#{request.ssl? ? 'https' : 'http'}://#{request.host_with_port}/callback", scope: 'repo'
     redirect_to address
   end
 
