@@ -1,5 +1,3 @@
-require 'docker_deploy/container'
-
 module DockerDeploy
   class Core
     attr_accessor :app
@@ -9,7 +7,7 @@ module DockerDeploy
     end
 
     def deploy
-      container = DockerDeploy::Container.new()
+      container = DockerDeploy::Container.new(core: self)
 
       @app.update(deploying: false)
     end

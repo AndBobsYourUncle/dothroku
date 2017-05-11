@@ -1,0 +1,19 @@
+version: '2'
+
+services:
+  DOTHROKU_CONTAINER_NAME:
+    image: DOTHROKU_IMAGE_NAME
+    command: bash -c "bundle exec jekyll serve --port 9001"
+    container_name: DOTHROKU_CONTAINER_NAME
+    restart: always
+    networks:
+      - dothroku_nginx
+    environment:
+      - VIRTUAL_HOST=DOTHROKU_HOSTNAME
+      - VIRTUAL_PORT=9001
+      - LETSENCRYPT_HOST=DOTHROKU_HOSTNAME
+      - LETSENCRYPT_EMAIL=DOTHROKU_EMAIL
+networks:
+  dothroku_nginx:
+    external:
+      name: dothroku_nginx

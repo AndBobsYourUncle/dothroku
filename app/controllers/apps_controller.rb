@@ -74,7 +74,7 @@ class AppsController < ApplicationController
 
     selected_repository = all_repositories.select { |r| r.id == @app.github_repo }.first
 
-    if @app.github_repo
+    if @app.github_repo.present?
       branches = github.branches @app.github_repo
       @repo_branches = branches.map { |r| OpenStruct.new({id: r.name, name: r.name}) }
     end
@@ -85,7 +85,7 @@ class AppsController < ApplicationController
   end
 
   def app_params
-    params.require(:app).permit :name, :github_auth_token, :github_repo, :github_branch
+    params.require(:app).permit :name, :buildpack_id, :hostname, :ssl_email, :github_auth_token, :github_repo, :github_branch
   end
 
 end
