@@ -38,6 +38,9 @@ services:
     environment:
       POSTGRES_USER: root
       POSTGRES_PASSWORD:
+  redis:
+    image: redis
+    container_name: redis
   dothroku:
     build:
       context: .
