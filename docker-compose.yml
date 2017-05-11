@@ -45,26 +45,26 @@ services:
   redis:
     image: redis
     container_name: redis
-  # workers-dothroku:
-  #   build:
-  #     context: .
-  #     args:
-  #       - DOCKER_GROUP_ID
-  #   image: dothroku
-  #   command: bash -c "export RAILS_ENV=production && QUEUE=* rake environment resque:work"
-  #   container_name: workers-dothroku
-  #   restart: always
-  #   depends_on:
-  #     - redis
-  #     - pg-dothroku
-  #     - nginx-server
-  #     - lets-encrypt
-  #   volumes_from:
-  #     - pg-dothroku
-  #   volumes:
-  #     - /var/run/docker.sock:/var/run/docker.sock
-  #   environment:
-  #     - SECRET_KEY_BASE=${SECRET_KEY_BASE}
+  workers-dothroku:
+    build:
+      context: .
+      args:
+        - DOCKER_GROUP_ID
+    image: dothroku
+    command: bash -c "export RAILS_ENV=production && QUEUE=* rake environment resque:work"
+    container_name: workers-dothroku
+    restart: always
+    depends_on:
+      - redis
+      - pg-dothroku
+      - nginx-server
+      - lets-encrypt
+    volumes_from:
+      - pg-dothroku
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    environment:
+      - SECRET_KEY_BASE=${SECRET_KEY_BASE}
   dothroku:
     build:
       context: .
