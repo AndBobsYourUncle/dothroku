@@ -24,4 +24,6 @@ Rails.application.routes.draw do
   end
 
   mount ActionCable.server, at: '/cable'
+
+  mount Resque::Server.new, :at => "/resque"
 end
