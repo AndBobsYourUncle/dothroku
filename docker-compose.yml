@@ -45,6 +45,8 @@ services:
   redis:
     image: redis
     container_name: redis
+    networks:
+      - back
   workers-dothroku:
     build:
       context: .
@@ -54,6 +56,8 @@ services:
     command: bash -c "export RAILS_ENV=production && QUEUE=* rake environment resque:work"
     container_name: workers-dothroku
     restart: always
+    networks:
+      - back
     depends_on:
       - redis
       - pg-dothroku
@@ -76,8 +80,7 @@ services:
     restart: always
     networks:
       - dothroku_nginx
-    links:
-      - redis
+      - back
     depends_on:
       - redis
       - pg-dothroku
@@ -100,3 +103,4 @@ networks:
   dothroku_nginx:
     external:
       name: dothroku_nginx
+  back:
