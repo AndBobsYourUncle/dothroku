@@ -60,6 +60,8 @@ gem "octokit", "~> 4.0"
 
 gem "select2-rails"
 
+gem 'resque'
+
 group :development, :test do
   # Call 'byebug' anywhere in the code to stop execution and get a debugger console
   # gem 'best_errors'
