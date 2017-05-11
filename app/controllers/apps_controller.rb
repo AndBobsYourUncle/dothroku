@@ -2,7 +2,7 @@ class AppsController < ApplicationController
   def deploy
     load_app
 
-    Apps::DeployJob.perform_later(@app) unless @app.deploying
+    Apps::DeployJob.perform_now(@app) unless @app.deploying
 
     redirect_to edit_app_path(@app), flash: {success: "App is being deployed!"}
   end
