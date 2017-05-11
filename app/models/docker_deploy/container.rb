@@ -11,22 +11,30 @@ module DockerDeploy
     end
 
     def deploy
+      ActionCable.server.broadcast "deploy_channel-#{core.app.image_name}", "Preparing build container...\n"
       container, image = prepare_container 'docker:dind', [
         'apk add --no-cache git',
         "git clone https://github.com/#{core.app.github_repo} --depth 1 --branch #{core.app.github_branch}"
       ]
+      ActionCable.server.broadcast "deploy_channel-#{core.app.image_name}", "Adding in buildpacks...\n"
       container, image = add_buildpacks container, image
+      ActionCable.server.broadcast "deploy_channel-#{core.app.image_name}", "Building docker image...\n"
       run_with_output image, ["docker", "build", ".", "-t", core.app.image_name]
 
+      ActionCable.server.broadcast "deploy_channel-#{core.app.image_name}", "Preparing deploy container...\n"
       container, image = prepare_container 'docker/compose:1.8.0', [
         "version"
       ]
       container, image = add_file container, image, core.app.buildpack.compose_filename, "/docker-compose.yml", true
+      ActionCable.server.broadcast "deploy_channel-#{core.app.image_name}", "Deploying docker image...\n"
       run_with_output image, ["up", "-d"]
 
+      ActionCable.server.broadcast "deploy_channel-#{core.app.image_name}", "Cleaning up images and containers...\n"
       (cleanup_containers + cleanup_images).compact.each do |docker_object|
         docker_object.delete(:force => true) rescue nil
       end
+
+      ActionCable.server.broadcast "deploy_channel-#{core.app.image_name}", "Deploy process done.\n"
     end
 
     def prepare_container image_name, commands
@@ -84,6 +92,7 @@ module DockerDeploy
 
     def add_buildpacks container, image
       core.app.buildpack.files.each do |file|
+        ActionCable.server.broadcast "deploy_channel-#{core.app.image_name}", "Adding file #{file.destination}\n"
         container, image = add_file container, image, file.full_source, file.destination
       end
 

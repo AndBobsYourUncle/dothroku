@@ -40,9 +40,26 @@
               .card-block
                 %h6.card-title App Status
 
+                .row
+                  .col
+                    .form-group
+                      - if @app.deploying
+                        %button.btn.btn-labeled.btn-warning.app_status_button{:type => "button"}
+                          %span.btn-label
+                            =fa_icon("clock-o 2x")
+                          %span.btn-text
+                            Deploying
+                      - else
+                        %button.btn.btn-labeled.btn-success.app_status_button{:type => "button"}
+                          %span.btn-label
+                            =fa_icon("check-circle 2x")
+                          %span.btn-text
+                            Deployed
+                .row
+                  .col
+                    .form-group
+                      %label{for: "deploy_content"} Deploy output
+                      %textarea#deploy_content.form-control{rows: "15"}
+
       - else
         =link_to "Link Github", authorize_app_path(app: @app), class: 'btn btn-secondary btn-sm active', role: 'button', "aria-pressed": true
-
-.form-group.mt-2
-  %label{for: "deploy_content"} Deploy output
-  %textarea#deploy_content.form-control{rows: "12"}

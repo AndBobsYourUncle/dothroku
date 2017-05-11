@@ -22,6 +22,8 @@ class App < ApplicationRecord
 
   before_save :clear_github_branch, if: :github_repo_changed?
 
+  before_save :broadcast_changes
+
   def image_name
     name.parameterize
   end
@@ -30,5 +32,9 @@ class App < ApplicationRecord
 
   def clear_github_branch
     self.github_branch = nil
+  end
+
+  def broadcast_changes
+    ActionCable.server.broadcast "app_status_channel-#{image_name}", changes
   end
 end
