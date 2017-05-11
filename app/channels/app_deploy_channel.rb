@@ -1,7 +1,6 @@
 class AppDeployChannel < ApplicationCable::Channel
   def subscribed
-    # stream_from "some_channel"
-    stream_from "deploy_channel"
+    stream_from "deploy_channel-#{params['image_name']}"
   end
 
   def unsubscribed

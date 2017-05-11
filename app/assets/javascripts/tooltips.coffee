@@ -1,2 +1,2 @@
-$(document).ready () ->
+$(document).on "turbolinks:load", ->
   $('[data-toggle="tooltip"]').tooltip()

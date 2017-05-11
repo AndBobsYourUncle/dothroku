@@ -8,7 +8,9 @@ module DockerDeploy
       options.each {|key, value| send("#{key}=", value)}
       self.cleanup_containers = []
       self.cleanup_images = []
+    end
 
+    def deploy
       container, image = prepare_container 'docker:dind', [
         'apk add --no-cache git',
         "git clone https://github.com/#{core.app.github_repo} --depth 1 --branch #{core.app.github_branch}"
@@ -108,7 +110,7 @@ module DockerDeploy
       container.attach(ATTACH_DEFAULTS.dup) do |stream, chunk|
         output = stream_to_output stream, chunk
 
-        ActionCable.server.broadcast 'deploy_channel', output.to_s.strip_extended
+        ActionCable.server.broadcast "deploy_channel-#{core.app.image_name}", output.to_s.strip_extended
       end
     end
 

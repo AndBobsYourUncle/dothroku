@@ -6,27 +6,42 @@
         .alert.alert-success{role: "alert"}
           = "Authorized on GitHub as @#{@github_user.login} (#{@github_user.name})"
 
-        =form.input :buildpack_id, collection: Buildpack.all, wrapper_html: {class: 'row justify-content-start col-4'}
+        .row
+          .col-4
+            .card
+              .card-block
+                %h6.card-title App Details
 
-        =form.input :hostname, wrapper_html: {class: 'row justify-content-start col-4'}
+                =form.input_field :image_name, as: :hidden
 
-        =form.input :ssl_email, wrapper_html: {class: 'row justify-content-start col-4'}
+                =form.input :buildpack_id, collection: Buildpack.all
 
-        =form.input :github_repo, collection: @own_repos, wrapper_html: {class: 'row justify-content-start col-4'}
+                =form.input :hostname
 
-        - if @app.github_repo
-          =form.input :github_branch, collection: @repo_branches, wrapper_html: {class: 'row justify-content-start col-4'}
+                =form.input :ssl_email
 
-        - if @app.github_branch.present? && @app.buildpack_id.present? && @app.hostname.present? && @app.ssl_email.present?
-          =link_to "Deploy", deploy_app_path(@app), class: 'btn btn-primary ajax_link', role: 'button', "aria-pressed": true
-        - else
-          =link_to "Deploy", '', class: 'btn btn-secondary', role: 'button', disabled: 'disabled', "data-toggle":"tooltip", "data-placement": "top", "title": "You need to select a branch, and fill in a buildpack, hostname and SSL email to deploy."
+                =form.input :github_repo, collection: @own_repos
 
+                - if @app.github_repo
+                  =form.input :github_branch, collection: @repo_branches
+
+                - if @app.github_branch.present? && @app.buildpack_id.present? && @app.hostname.present? && @app.ssl_email.present?
+                  - if @app.deploying
+                    =link_to "Deploy", deploy_app_path(@app), class: 'btn btn-primary deploy_link disabled', role: 'button', "aria-disabled": "true", "aria-pressed": true
+                  - else
+                    =link_to "Deploy", deploy_app_path(@app), class: 'btn btn-primary deploy_link', role: 'button', "aria-pressed": true
+                - else
+                  =link_to "Deploy", '', class: 'btn btn-secondary disabled', role: 'button', "aria-disabled": "true", "data-toggle":"tooltip", "data-placement": "top", "title": "You need to select a branch, and fill in a buildpack, hostname and SSL email to deploy."
+
+                =form.submit "Update App", class: 'card-link btn btn-primary update_button', disabled: @app.deploying ? 'true' : nil
+
+          .col-6
+            .card
+              .card-block
+                %h6.card-title App Status
 
       - else
-        =link_to "Link Github", authorize_app_path(app: @app), class: 'btn btn-secondary btn-lg active', role: 'button', "aria-pressed": true
-
-      =form.submit "Update App", class: 'card-link btn btn-primary'
+        =link_to "Link Github", authorize_app_path(app: @app), class: 'btn btn-secondary btn-sm active', role: 'button', "aria-pressed": true
 
 .form-group.mt-2
   %label{for: "deploy_content"} Deploy output

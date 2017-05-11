@@ -8,6 +8,7 @@ module DockerDeploy
 
     def deploy
       container = DockerDeploy::Container.new(core: self)
+      container.deploy
 
       @app.update(deploying: false)
     end
