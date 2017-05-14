@@ -1,0 +1,8 @@
+export RAILS_ENV=production
+
+rake db:create
+rake db:migrate
+
+chown -R app:app /home/app/webapp
+
+rake assets:precompile
