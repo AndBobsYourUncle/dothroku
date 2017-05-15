@@ -22,7 +22,7 @@ services:
       - LETSENCRYPT_HOST=DOTHROKU_HOSTNAME
       - LETSENCRYPT_EMAIL=DOTHROKU_EMAIL
       - SECRET_KEY_BASE=testy123
-      - REDISCLOUD_URL=redis://test_redis:6381
+      - REDISCLOUD_URL=redis://test_redis:6379
 networks:
   dothroku_nginx:
     external:
