@@ -19,6 +19,7 @@ class App < ApplicationRecord
   belongs_to :buildpack, optional: true
 
   has_many :app_services
+  has_many :environment_variables
 
   validates :name, presence: true
 
