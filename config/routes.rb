@@ -5,8 +5,6 @@ Rails.application.routes.draw do
 
   root to: 'pages#home'
 
-  get 'secret', to: 'pages#secret', as: :secret
-
   get 'callback', to: 'github#callback', as: :github_callback
 
   namespace :docker_api do

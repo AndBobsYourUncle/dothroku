@@ -1,0 +1,12 @@
+%nav.col-sm-3.col-md-2.hidden-xs-down.bg-faded.sidebar
+  %ul.nav.nav-pills.flex-column
+    %li.nav-item
+      %a.nav-link{href: edit_app_path(@app), class: current_page?(edit_app_url(@app)) ? 'active' : ''}
+        Overview
+        - if current_page?(edit_app_url(@app))
+          %span.sr-only (current)
+    %li.nav-item
+      %a.nav-link{href: app_services_path(@app), class: current_page?(app_services_path(@app)) ? 'active' : ''}
+        Services
+        - if current_page?(app_services_path(@app))
+          %span.sr-only (current)
