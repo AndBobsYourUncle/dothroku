@@ -17,5 +17,5 @@ Buildpack.create(
 
 
 Service.create(
-  name: 'Redis'
+  name: 'redis'
 )

@@ -13,7 +13,7 @@ class Buildpack < ApplicationRecord
   accepts_nested_attributes_for :files
 
   def url_name
-    name.parameterize
+    name.parameterize.underscore
   end
 
   def compose_filename

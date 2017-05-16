@@ -1,11 +1,6 @@
 version: '2'
 
 services:
-  test_redis:
-    image: redis
-    container_name: test_redis
-    networks:
-      - DOTHROKU_NETWORK_NAME
   DOTHROKU_CONTAINER_NAME:
     image: DOTHROKU_IMAGE_NAME
     command: bash -c "rails-init && /sbin/my_init"
@@ -14,15 +9,13 @@ services:
     networks:
       - dothroku_nginx
       - DOTHROKU_NETWORK_NAME
-    depends_on:
-      - test_redis
     environment:
       - VIRTUAL_HOST=DOTHROKU_HOSTNAME
       - VIRTUAL_PORT=443
       - LETSENCRYPT_HOST=DOTHROKU_HOSTNAME
       - LETSENCRYPT_EMAIL=DOTHROKU_EMAIL
       - SECRET_KEY_BASE=testy123
-      - REDISCLOUD_URL=redis://test_redis:6379
+      - REDISCLOUD_URL=redis://redis_chat_app:6379
 networks:
   dothroku_nginx:
     external:

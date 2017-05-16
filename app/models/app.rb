@@ -27,11 +27,21 @@ class App < ApplicationRecord
   before_save :broadcast_changes
 
   def image_name
-    name.parameterize
+    name.parameterize.underscore
   end
 
   def network_name
-    "#{name.parameterize}_app_network"
+    "#{image_name}_app_network"
+  end
+
+  def docker_compose_parameters
+    {
+      'DOTHROKU_IMAGE_NAME':      image_name,
+      'DOTHROKU_CONTAINER_NAME':  image_name,
+      'DOTHROKU_NETWORK_NAME':    network_name,
+      'DOTHROKU_HOSTNAME':        hostname,
+      'DOTHROKU_EMAIL':           ssl_email
+    }
   end
 
   private

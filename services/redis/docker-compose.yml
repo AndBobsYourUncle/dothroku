@@ -6,6 +6,8 @@ services:
     container_name: DOTHROKU_CONTAINER_NAME
     networks:
       - DOTHROKU_NETWORK_NAME
+
+networks:
   DOTHROKU_NETWORK_NAME:
     external:
       name: DOTHROKU_NETWORK_NAME

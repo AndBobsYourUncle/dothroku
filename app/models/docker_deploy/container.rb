@@ -25,12 +25,22 @@ module DockerDeploy
       Docker::Network.create("#{core.app.image_name}_app_network") rescue nil
 
       ActionCable.server.broadcast "deploy_channel-#{core.app.image_name}", "Preparing deploy container...\n"
-      container, image = prepare_container 'docker/compose:1.8.0', [
+      container, image = prepare_container 'docker/compose:1.11.2', [
         "version"
       ]
-      container, image = add_file container, image, core.app.buildpack.compose_filename, "/docker-compose.yml", true
+      container, image = add_file container, image, core.app.buildpack.compose_filename, "/docker-compose.yml", core.app.docker_compose_parameters
       ActionCable.server.broadcast "deploy_channel-#{core.app.image_name}", "Deploying docker image...\n"
       run_with_output image, ["up", "-d"]
+
+      core.app.app_services.each do |app_service|
+        ActionCable.server.broadcast "deploy_channel-#{core.app.image_name}", "Preparing deploy container...\n"
+        container, image = prepare_container 'docker/compose:1.11.2', [
+          "version"
+        ]
+        container, image = add_file container, image, app_service.compose_filename, "/docker-compose.yml", app_service.docker_compose_parameters
+        ActionCable.server.broadcast "deploy_channel-#{core.app.image_name}", "Deploying docker image...\n"
+        run_with_output image, ["up", "-d"]
+      end
 
       ActionCable.server.broadcast "deploy_channel-#{core.app.image_name}", "Cleaning up images and containers...\n"
       (cleanup_containers + cleanup_images).compact.each do |docker_object|
@@ -70,22 +80,18 @@ module DockerDeploy
       [container, image]
     end
 
-    def get_source_file src, deploy
-      if deploy
-        file = File.read(src)
-        file = file.gsub('DOTHROKU_IMAGE_NAME', core.app.image_name)
-        file = file.gsub('DOTHROKU_CONTAINER_NAME', core.app.image_name)
-        file = file.gsub('DOTHROKU_NETWORK_NAME', core.app.network_name)
-        file = file.gsub('DOTHROKU_HOSTNAME', core.app.hostname)
-        file = file.gsub('DOTHROKU_EMAIL', core.app.ssl_email)
-        file
-      else
-        File.read(src)
+    def get_source_file src, parameters={}
+      file = File.read(src)
+
+      parameters.each do |key, value|
+        file = file.gsub(key.to_s, value.to_s)
       end
+
+      file
     end
 
-    def add_file container, image, src, dest, deploy=false
-      container.store_file("/#{core.app.github_repo.split('/')[1]}#{dest}", get_source_file(src, deploy))
+    def add_file container, image, src, dest, parameters={}
+      container.store_file("/#{core.app.github_repo.split('/')[1]}#{dest}", get_source_file(src, parameters))
       image = container.commit
 
       cleanup_containers << container

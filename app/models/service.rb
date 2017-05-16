@@ -7,4 +7,11 @@
 #
 
 class Service < ApplicationRecord
+  def image_name
+    name.parameterize.underscore
+  end
+
+  def compose_filename
+    "services/#{image_name}/docker-compose.yml"
+  end
 end
