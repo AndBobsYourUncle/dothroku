@@ -21,6 +21,10 @@ class AppService < ApplicationRecord
     app.network_name
   end
 
+  def project_name
+    "#{image_name}_project"
+  end
+
   def docker_compose_parameters
     {
       'DOTHROKU_CONTAINER_NAME':  image_name,

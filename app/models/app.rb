@@ -34,6 +34,14 @@ class App < ApplicationRecord
     "#{image_name}_app_network"
   end
 
+  def compose_filename
+    buildpack.compose_filename
+  end
+
+  def project_name
+    "#{image_name}_project"
+  end
+
   def docker_compose_parameters
     {
       'DOTHROKU_IMAGE_NAME':      image_name,

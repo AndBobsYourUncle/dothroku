@@ -11,43 +11,43 @@ module DockerDeploy
     end
 
     def deploy
-      ActionCable.server.broadcast "deploy_channel-#{core.app.image_name}", "Preparing build container...\n"
+      broadcast_message "Preparing build container...\n"
       container, image = prepare_container 'docker:dind', [
         'apk add --no-cache git',
-        "git clone https://github.com/#{core.app.github_repo} --depth 1 --branch #{core.app.github_branch}"
+        "git clone https://github.com/#{core.app.github_repo} #{core.app.project_name} --depth 1 --branch #{core.app.github_branch}"
       ]
-      ActionCable.server.broadcast "deploy_channel-#{core.app.image_name}", "Adding in buildpacks...\n"
-      container, image = add_buildpacks container, image, core.app.docker_compose_parameters
-      ActionCable.server.broadcast "deploy_channel-#{core.app.image_name}", "Building docker image...\n"
-      run_with_output image, ["docker", "build", ".", "-t", core.app.image_name]
+      broadcast_message "Adding in buildpacks...\n"
+      container, image = add_buildpacks container, image, core.app, core.app.docker_compose_parameters
+      broadcast_message "Building docker image...\n"
+      run_with_output image, ["docker", "build", ".", "-t", core.app.image_name], core.app.project_name
 
-      ActionCable.server.broadcast "deploy_channel-#{core.app.image_name}", "Creating network ...\n"
+      broadcast_message "Creating network ...\n"
       Docker::Network.create("#{core.app.image_name}_app_network") rescue nil
 
-      ActionCable.server.broadcast "deploy_channel-#{core.app.image_name}", "Preparing deploy container...\n"
+      broadcast_message "Preparing deploy container...\n"
       container, image = prepare_container 'docker/compose:1.11.2', [
         "version"
       ]
-      container, image = add_file container, image, core.app.buildpack.compose_filename, "/docker-compose.yml", core.app.docker_compose_parameters
-      ActionCable.server.broadcast "deploy_channel-#{core.app.image_name}", "Deploying docker image...\n"
-      run_with_output image, ["up", "-d"]
+      container, image = add_compose_file container, image, core.app
+      broadcast_message "Deploying docker image...\n"
+      run_with_output image, ["up", "-d"], core.app.project_name
 
       core.app.app_services.each do |app_service|
-        ActionCable.server.broadcast "deploy_channel-#{core.app.image_name}", "Preparing deploy container...\n"
+        broadcast_message "Preparing deploy container...\n"
         container, image = prepare_container 'docker/compose:1.11.2', [
           "version"
         ]
-        container, image = add_file container, image, app_service.compose_filename, "/docker-compose.yml", app_service.docker_compose_parameters
-        ActionCable.server.broadcast "deploy_channel-#{core.app.image_name}", "Deploying docker image...\n"
-        run_with_output image, ["up", "-d"]
+        container, image = add_compose_file container, image, app_service
+        broadcast_message "Deploying docker image...\n"
+        run_with_output image, ["up", "-d"], app_service.project_name
       end
 
-      ActionCable.server.broadcast "deploy_channel-#{core.app.image_name}", "Cleaning up images and containers...\n"
+      broadcast_message "Cleaning up images and containers...\n"
       (cleanup_containers + cleanup_images).compact.each do |docker_object|
         docker_object.delete(:force => true) rescue nil
       end
 
-      ActionCable.server.broadcast "deploy_channel-#{core.app.image_name}", "Deploy process done.\n"
+      broadcast_message "Deploy process done.\n"
     end
 
     def prepare_container image_name, commands
@@ -90,8 +90,14 @@ module DockerDeploy
       file
     end
 
-    def add_file container, image, src, dest, parameters={}
-      container.store_file("/#{core.app.github_repo.split('/')[1]}#{dest}", get_source_file(src, parameters))
+    def add_compose_file container, image, app_object
+      container, image = add_file container, image, app_object.compose_filename,
+                    "/docker-compose.yml", app_object.project_name, app_object.docker_compose_parameters
+      [container, image]
+    end
+
+    def add_file container, image, src, dest, project_name, parameters={}
+      container.store_file("/#{project_name}#{dest}", get_source_file(src, parameters))
       image = container.commit
 
       cleanup_containers << container
@@ -100,19 +106,20 @@ module DockerDeploy
       [container, image]
     end
 
-    def add_buildpacks container, image, parameters={}
-      core.app.buildpack.files.each do |file|
-        ActionCable.server.broadcast "deploy_channel-#{core.app.image_name}", "Adding file #{file.destination}\n"
-        container, image = add_file container, image, file.full_source, file.destination, parameters
+    def add_buildpacks container, image, app_object, parameters={}
+      app_object.buildpack.files.each do |file|
+        broadcast_message "Adding file #{file.destination}\n"
+        container, image = add_file container, image, file.full_source,
+                      file.destination, app_object.project_name, parameters
       end
 
       [container, image]
     end
 
-    def run_with_output image, cmd
+    def run_with_output image, cmd, project_name
       container = Docker::Container.create(
         "Image" => image.id,
-        "WorkingDir" => "/#{core.app.github_repo.split('/')[1]}",
+        "WorkingDir" => "/#{project_name}",
         "HostConfig" => {
           "Binds" => ["/var/run/docker.sock:/var/run/docker.sock"]
         },
@@ -125,12 +132,16 @@ module DockerDeploy
       broadcast_container_output container
     end
 
+    def broadcast_message message
+      ActionCable.server.broadcast "deploy_channel-#{core.app.image_name}", message
+    end
+
     def broadcast_container_output container
       begin
         container.attach(ATTACH_DEFAULTS.dup) do |stream, chunk|
           output = stream_to_output stream, chunk
 
-          ActionCable.server.broadcast "deploy_channel-#{core.app.image_name}", output.to_s.strip_extended
+          broadcast_message output.to_s.strip_extended
         end
       rescue Docker::Error::TimeoutError => e
         broadcast_container_output container
