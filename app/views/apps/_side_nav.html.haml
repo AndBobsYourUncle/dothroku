@@ -11,3 +11,8 @@
           Services
           - if current_page?(app_services_path(@app))
             %span.sr-only (current)
+      %li.nav-item
+        %a.nav-link{href: environment_variables_path(@app), class: current_page?(environment_variables_path(@app)) ? 'active' : ''}
+          Environment Variables
+          - if current_page?(environment_variables_path(@app))
+            %span.sr-only (current)

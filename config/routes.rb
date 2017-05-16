@@ -22,6 +22,7 @@ Rails.application.routes.draw do
       get :deploy
 
       resources :app_services
+      resources :environment_variables
     end
   end
 

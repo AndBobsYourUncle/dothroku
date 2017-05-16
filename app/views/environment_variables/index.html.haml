@@ -1,0 +1,19 @@
+%ul.nav.justify-content-end
+  %li.nav-item
+    =link_to "New Environment Variable", new_environment_variable_path(@app), class: 'btn btn-primary btn-lg active', role: 'button', "aria-pressed": true
+
+%h2= "#{@app.name} Environment Variables"
+.table-responsive
+  %table.table.table-striped
+    %thead
+      %tr
+        %th Name
+        %th Value
+        %th Actions
+    %tbody
+      - @environment_variables.each do |environment_variable|
+        %tr
+          %td= environment_variable.name
+          %td= truncate(environment_variable.value, length: 20)
+          %td
+            =link_to fa_icon("trash-o"), environment_variable_path(environment_variable), class: 'btn btn-secondary btn-sm active', role: 'button', "aria-pressed": true, method: :delete

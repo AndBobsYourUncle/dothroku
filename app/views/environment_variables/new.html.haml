@@ -1,0 +1,5 @@
+=simple_form_for @environment_variable do |f|
+  =f.input :app_id, as: :hidden
+  =f.input :name
+  =f.input :value
+  =f.button :submit
