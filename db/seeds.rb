@@ -14,3 +14,8 @@ Buildpack.create(
     {source: "/docker-env.conf", destination: "/docker-env.conf"}
   ]
 )
+
+
+Service.create(
+  name: 'Redis'
+)

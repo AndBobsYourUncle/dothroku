@@ -1,0 +1,11 @@
+version: '2'
+
+services:
+  DOTHROKU_CONTAINER_NAME:
+    image: redis
+    container_name: DOTHROKU_CONTAINER_NAME
+    networks:
+      - DOTHROKU_NETWORK_NAME
+  DOTHROKU_NETWORK_NAME:
+    external:
+      name: DOTHROKU_NETWORK_NAME

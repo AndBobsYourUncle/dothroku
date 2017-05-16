@@ -18,6 +18,8 @@
 class App < ApplicationRecord
   belongs_to :buildpack, optional: true
 
+  has_many :app_services
+
   validates :name, presence: true
 
   before_save :clear_github_branch, if: :github_repo_changed?

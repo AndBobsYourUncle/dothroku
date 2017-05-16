@@ -10,10 +10,17 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170510233748) do
+ActiveRecord::Schema.define(version: 20170516031403) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "app_services", force: :cascade do |t|
+    t.integer "app_id"
+    t.integer "service_id"
+    t.index ["app_id"], name: "index_app_services_on_app_id", using: :btree
+    t.index ["service_id"], name: "index_app_services_on_service_id", using: :btree
+  end
 
   create_table "apps", force: :cascade do |t|
     t.string   "name"
@@ -37,6 +44,10 @@ ActiveRecord::Schema.define(version: 20170510233748) do
   end
 
   create_table "buildpacks", force: :cascade do |t|
+    t.string "name"
+  end
+
+  create_table "services", force: :cascade do |t|
     t.string "name"
   end
 

@@ -1,0 +1,17 @@
+%ul.nav.justify-content-end
+  %li.nav-item
+    =link_to "New App Service", new_app_service_path(@app), class: 'btn btn-primary btn-lg active', role: 'button', "aria-pressed": true
+
+%h2= "#{@app.name} Services"
+.table-responsive
+  %table.table.table-striped
+    %thead
+      %tr
+        %th Name
+        %th Actions
+    %tbody
+      - @app_services.each do |app_service|
+        %tr
+          %td= app_service.service.name #link_to app.name, edit_app_path(app)
+          %td
+            =link_to fa_icon("trash-o"), app_service_path(app_service), class: 'btn btn-secondary btn-sm active', role: 'button', "aria-pressed": true, method: :delete

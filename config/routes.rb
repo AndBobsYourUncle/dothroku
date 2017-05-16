@@ -22,6 +22,8 @@ Rails.application.routes.draw do
     member do
       get :authorize
       get :deploy
+
+      resources :app_services
     end
   end
 

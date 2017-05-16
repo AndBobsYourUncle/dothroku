@@ -1,0 +1,4 @@
+=simple_form_for @app_service do |f|
+  =f.input :app_id, as: :hidden
+  =f.input :service_id, label: 'Service', collection: Service.all
+  =f.button :submit
