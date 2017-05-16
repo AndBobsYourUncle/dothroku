@@ -21,6 +21,9 @@ module DockerDeploy
       ActionCable.server.broadcast "deploy_channel-#{core.app.image_name}", "Building docker image...\n"
       run_with_output image, ["docker", "build", ".", "-t", core.app.image_name]
 
+      ActionCable.server.broadcast "deploy_channel-#{core.app.image_name}", "Creating network ...\n"
+      Docker::Network.create("#{core.app.image_name}_app_network") rescue nil
+
       ActionCable.server.broadcast "deploy_channel-#{core.app.image_name}", "Preparing deploy container...\n"
       container, image = prepare_container 'docker/compose:1.8.0', [
         "version"
@@ -72,6 +75,7 @@ module DockerDeploy
         file = File.read(src)
         file = file.gsub('DOTHROKU_IMAGE_NAME', core.app.image_name)
         file = file.gsub('DOTHROKU_CONTAINER_NAME', core.app.image_name)
+        file = file.gsub('DOTHROKU_NETWORK_NAME', core.app.network_name)
         file = file.gsub('DOTHROKU_HOSTNAME', core.app.hostname)
         file = file.gsub('DOTHROKU_EMAIL', core.app.ssl_email)
         file

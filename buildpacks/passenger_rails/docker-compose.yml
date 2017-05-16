@@ -5,7 +5,7 @@ services:
     image: redis
     container_name: test_redis
     networks:
-      - app_network
+      - DOTHROKU_NETWORK_NAME
   DOTHROKU_CONTAINER_NAME:
     image: DOTHROKU_IMAGE_NAME
     command: bash -c "rails-init && /sbin/my_init"
@@ -13,7 +13,7 @@ services:
     restart: always
     networks:
       - dothroku_nginx
-      - app_network
+      - DOTHROKU_NETWORK_NAME
     depends_on:
       - test_redis
     environment:
@@ -27,7 +27,9 @@ networks:
   dothroku_nginx:
     external:
       name: dothroku_nginx
-  app_network:
+  DOTHROKU_NETWORK_NAME:
+    external:
+      name: DOTHROKU_NETWORK_NAME
 
 #${SECRET_KEY_BASE}
 

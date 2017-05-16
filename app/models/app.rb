@@ -28,6 +28,10 @@ class App < ApplicationRecord
     name.parameterize
   end
 
+  def network_name
+    "#{name.parameterize}_app_network"
+  end
+
   private
 
   def clear_github_branch
