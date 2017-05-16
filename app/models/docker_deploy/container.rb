@@ -17,7 +17,7 @@ module DockerDeploy
         "git clone https://github.com/#{core.app.github_repo} #{core.app.project_name} --depth 1 --branch #{core.app.github_branch}"
       ]
       broadcast_message "Adding in buildpacks...\n"
-      container, image = add_buildpacks container, image, core.app, core.app.docker_compose_parameters
+      container, image = add_buildpacks container, image, core.app
       broadcast_message "Building docker image...\n"
       run_with_output image, ["docker", "build", ".", "-t", core.app.image_name], core.app.project_name
 
@@ -92,7 +92,7 @@ module DockerDeploy
 
     def add_compose_file container, image, app_object
       container, image = add_file container, image, app_object.compose_filename,
-                    "/docker-compose.yml", app_object.project_name, app_object.docker_compose_parameters
+        "/docker-compose.yml", app_object.project_name, app_object.docker_compose_parameters
       [container, image]
     end
 
@@ -106,11 +106,11 @@ module DockerDeploy
       [container, image]
     end
 
-    def add_buildpacks container, image, app_object, parameters={}
+    def add_buildpacks container, image, app_object
       app_object.buildpack.files.each do |file|
         broadcast_message "Adding file #{file.destination}\n"
         container, image = add_file container, image, file.full_source,
-                      file.destination, app_object.project_name, parameters
+          file.destination, app_object.project_name, app_object.docker_compose_parameters
       end
 
       [container, image]
