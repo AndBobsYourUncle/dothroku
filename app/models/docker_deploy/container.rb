@@ -17,7 +17,7 @@ module DockerDeploy
         "git clone https://github.com/#{core.app.github_repo} --depth 1 --branch #{core.app.github_branch}"
       ]
       ActionCable.server.broadcast "deploy_channel-#{core.app.image_name}", "Adding in buildpacks...\n"
-      container, image = add_buildpacks container, image
+      container, image = add_buildpacks container, image, core.app.docker_compose_parameters
       ActionCable.server.broadcast "deploy_channel-#{core.app.image_name}", "Building docker image...\n"
       run_with_output image, ["docker", "build", ".", "-t", core.app.image_name]
 
@@ -100,10 +100,10 @@ module DockerDeploy
       [container, image]
     end
 
-    def add_buildpacks container, image
+    def add_buildpacks container, image, parameters={}
       core.app.buildpack.files.each do |file|
         ActionCable.server.broadcast "deploy_channel-#{core.app.image_name}", "Adding file #{file.destination}\n"
-        container, image = add_file container, image, file.full_source, file.destination
+        container, image = add_file container, image, file.full_source, file.destination, parameters
       end
 
       [container, image]
