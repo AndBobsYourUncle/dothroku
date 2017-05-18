@@ -29,6 +29,7 @@ module DockerDeploy
         "version"
       ]
       container, image = add_compose_file container, image, core.app
+      container, image = add_env_file container, image, "", core.app, "%<name>s=%<val>s\n"
       broadcast_message "Deploying docker image...\n"
       run_with_output image, ["up", "-d"], core.app.project_name
 
@@ -106,11 +107,35 @@ module DockerDeploy
       [container, image]
     end
 
+    def add_env_file container, image, file, app_object, env_template="env %<name>s;\n"
+      file_src, dest = if file.present?
+        [get_source_file(file.full_source, app_object.docker_compose_parameters), file.destination]
+      else
+        ["", '/compose-variables.env']
+      end
+
+      app_object.environment_variables.each do |env_var|
+        file_src += sprintf env_template, name: env_var.name, val: env_var.value
+      end
+
+      container.store_file("/#{app_object.project_name}#{dest}", file_src)
+      image = container.commit
+
+      cleanup_containers << container
+      cleanup_images << image
+
+      [container, image]
+    end
+
     def add_buildpacks container, image, app_object
       app_object.buildpack.files.each do |file|
         broadcast_message "Adding file #{file.destination}\n"
-        container, image = add_file container, image, file.full_source,
-          file.destination, app_object.project_name, app_object.docker_compose_parameters
+        if file.env_file
+          container, image = add_env_file container, image, file, app_object
+        else
+          container, image = add_file container, image, file.full_source,
+            file.destination, app_object.project_name, app_object.docker_compose_parameters
+        end
       end
 
       [container, image]
@@ -130,6 +155,8 @@ module DockerDeploy
       cleanup_containers << container
 
       broadcast_container_output container
+
+      [container, image]
     end
 
     def broadcast_message message

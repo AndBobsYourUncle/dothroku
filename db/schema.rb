@@ -40,6 +40,8 @@ ActiveRecord::Schema.define(version: 20170516165831) do
     t.integer "buildpack_id"
     t.string  "source"
     t.string  "destination"
+    t.boolean "env_file"
+    t.string  "env_template"
     t.index ["buildpack_id"], name: "index_buildpack_files_on_buildpack_id", using: :btree
   end
 

@@ -4,6 +4,8 @@
 #
 #  buildpack_id :integer
 #  destination  :string
+#  env_file     :boolean
+#  env_template :string
 #  id           :integer          not null, primary key
 #  source       :string
 #

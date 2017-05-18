@@ -4,6 +4,7 @@ class CreateBuildpackFiles < ActiveRecord::Migration[5.0]
       t.references  :buildpack
       t.string      :source
       t.string      :destination
+      t.boolean     :env_file
     end
   end
 end

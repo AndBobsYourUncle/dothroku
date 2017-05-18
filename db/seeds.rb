@@ -11,7 +11,7 @@ Buildpack.create(
     {source: "/Dockerfile", destination: "/Dockerfile"},
     {source: "/script/docker/rails-init", destination: "/script/docker/rails-init"},
     {source: "/nginx.conf", destination: "/nginx.conf"},
-    {source: "/docker-env.conf", destination: "/docker-env.conf"}
+    {source: "/docker-env.conf", destination: "/docker-env.conf", env_file: true}
   ]
 )
 
