@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema.define(version: 20170516165831) do
+ActiveRecord::Schema.define(version: 20170518212000) do
 
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
@@ -54,6 +54,22 @@ ActiveRecord::Schema.define(version: 20170516165831) do
     t.string  "name"
     t.string  "value"
     t.index ["app_id"], name: "index_environment_variables_on_app_id", using: :btree
+  end
+
+  create_table "service_variable_sources", force: :cascade do |t|
+    t.integer "service_variable_id"
+    t.string  "name"
+    t.string  "source_model"
+    t.string  "source_attribute"
+    t.index ["service_variable_id"], name: "index_service_variable_sources_on_service_variable_id", using: :btree
+  end
+
+  create_table "service_variables", force: :cascade do |t|
+    t.integer "service_id"
+    t.string  "name"
+    t.string  "build_type"
+    t.string  "value"
+    t.index ["service_id"], name: "index_service_variables_on_service_id", using: :btree
   end
 
   create_table "services", force: :cascade do |t|

@@ -13,6 +13,8 @@ class AppService < ApplicationRecord
 
   accepts_nested_attributes_for :service
 
+  after_create :add_environment_variables
+
   def image_name
     "#{service.image_name}_#{app.image_name}"
   end
@@ -34,6 +36,19 @@ class AppService < ApplicationRecord
 
   def compose_filename
     service.compose_filename
+  end
+
+  private
+
+  def add_environment_variables
+    service.service_variables.each do |service_variable|
+      env_var = service_variable.environment_variable self
+
+      app.environment_variables.build(
+        name:   env_var.name,
+        value:  env_var.value
+      ).save!
+    end
   end
 
 end

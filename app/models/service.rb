@@ -7,6 +7,10 @@
 #
 
 class Service < ApplicationRecord
+  has_many :service_variables
+
+  accepts_nested_attributes_for :service_variables
+
   def image_name
     name.parameterize.underscore
   end

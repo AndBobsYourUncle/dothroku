@@ -15,7 +15,7 @@ services:
       - LETSENCRYPT_HOST=DOTHROKU_HOSTNAME
       - LETSENCRYPT_EMAIL=DOTHROKU_EMAIL
     env_file:
-      - /chatty_project/compose-variables.env
+      - ./compose-variables.env
 networks:
   dothroku_nginx:
     external:
