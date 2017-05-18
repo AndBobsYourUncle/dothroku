@@ -8,14 +8,18 @@ services:
     restart: always
     networks:
       - dothroku_nginx
-      - app_network
+      - DOTHROKU_NETWORK_NAME
     environment:
       - VIRTUAL_HOST=DOTHROKU_HOSTNAME
       - VIRTUAL_PORT=9001
       - LETSENCRYPT_HOST=DOTHROKU_HOSTNAME
       - LETSENCRYPT_EMAIL=DOTHROKU_EMAIL
+    env_file:
+      - ./compose-variables.env
 networks:
   dothroku_nginx:
     external:
       name: dothroku_nginx
-  app_network:
+  DOTHROKU_NETWORK_NAME:
+    external:
+      name: DOTHROKU_NETWORK_NAME

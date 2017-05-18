@@ -23,6 +23,3 @@ networks:
   DOTHROKU_NETWORK_NAME:
     external:
       name: DOTHROKU_NETWORK_NAME
-
-#${SECRET_KEY_BASE}
-
