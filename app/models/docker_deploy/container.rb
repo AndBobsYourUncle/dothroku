@@ -107,7 +107,7 @@ module DockerDeploy
       [container, image]
     end
 
-    def add_env_file container, image, file, app_object, env_template="env %<name>s;\n"
+    def add_env_file container, image, file, app_object, env_template
       file_src, dest = if file.present?
         [get_source_file(file.full_source, app_object.docker_compose_parameters), file.destination]
       else
@@ -131,7 +131,7 @@ module DockerDeploy
       app_object.buildpack.files.each do |file|
         broadcast_message "Adding file #{file.destination}\n"
         if file.env_file
-          container, image = add_env_file container, image, file, app_object
+          container, image = add_env_file container, image, file, app_object, file.env_template
         else
           container, image = add_file container, image, file.full_source,
             file.destination, app_object.project_name, app_object.docker_compose_parameters
